@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+      - name: payment-app
+        image: alpine
+        command: ["sh", "-c"]
+        args:
+          - |
+            echo "Initializing Payment Engine..."
+            sleep 2
+            while true; do
+              if OUTPUT=$(nc -z -w 3 $DB_HOST 5432 2>&1); then
+                echo "$(date) - Success! Connected to database. Processing transactions..."
+              else
+                ERROR_MSG=${OUTPUT:-"Connection refused (port closed or destination unreachable)"}
+                echo "panic: dial tcp $DB_HOST:5432: $ERROR_MSG"
+                exit 1
+              fi
+              sleep 5
+            done
+        env:
+        - name: DB_HOST
+          value: "postgres-service" 
