@@ -1,9 +1,3 @@
-# #  Production Incident Report & Troubleshooting Matrix: EKS CrashLoopBackOff
-
-This repository contains the post-mortem analysis, environment replication manifests, and resolution pathways for a high-severity `CrashLoopBackOff` incident encountered within the payment processing infrastructure on AWS EKS.
-
----
-
 ##  Incident Summary & Context
 
 A core component of the payment infrastructure, `payment-service`, was caught in a continuous crash loop, preventing financial transaction processing.
