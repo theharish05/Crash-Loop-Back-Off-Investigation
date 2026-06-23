@@ -12,7 +12,7 @@ During triage, the following telemetry data was extracted from the failing workl
 
 ---
 
-## 🔬 Root Cause Analysis (The Evaluation Matrix)
+##  Root Cause Analysis (The Evaluation Matrix)
 
 To resolve the incident, three potential infrastructure failure variants were evaluated at different layers of the OSI model. Below is the technical breakdown of how each issue manifests, how to identify it, and how it was systematically verified.
 
