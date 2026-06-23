@@ -1,4 +1,4 @@
-##  Incident Summary & Context
+## Incident Summary & Context
 
 A core component of the payment infrastructure, `payment-service`, was caught in a continuous crash loop, preventing financial transaction processing.
 
@@ -12,28 +12,27 @@ During triage, the following telemetry data was extracted from the failing workl
 
 ---
 
-##  Root Cause Analysis (The Evaluation Matrix)
+## Root Cause Analysis (The Evaluation Matrix)
 
 To resolve the incident, three potential infrastructure failure variants were evaluated at different layers of the OSI model. Below is the technical breakdown of how each issue manifests, how to identify it, and how it was systematically verified.
 
 ### 1. The DNS Issue (Layer 7 Failure)
 
 * **What it means:** The application is searching for a domain name or internal service discovery abstraction that does not exist in the cluster's internal registry.
-* **The Log Signature:** ```text
-panic: dial tcp postgres-service:5432: nc: bad address 'postgres-service'
-```
+* **The Log Signature:**
+  ```text
+  panic: dial tcp postgres-service:5432: nc: bad address 'postgres-service'
 
 ```
-
 
 * **Root Cause:** The application is calling a service wrapper (`postgres-service`) before the Kubernetes Service manifest itself has been applied or registered into **CoreDNS**.
 
 ### 2. The Database / Network Issue (Layer 4 Failure)
 
 * **What it means:** Name resolution is working perfectly (CoreDNS maps the name to a valid IP address), but the network packet arrives at a destination where no backend application process is actively listening on the requested port (`5432`).
-* **The Log Signature:** ```text
+* **The Log Signature:**
+```text
 panic: dial tcp 192.168.15.70:5432: Connection refused (port closed)
-```
 
 ```
 
@@ -43,9 +42,9 @@ panic: dial tcp 192.168.15.70:5432: Connection refused (port closed)
 ### 3. The Secret / Credential Issue (Layer 7 Application Rejection)
 
 * **What it means:** The network bridge is completely healthy, DNS resolves perfectly, and the database application answers the phone. However, the connection is dropped because the application passed missing, mismatched, or corrupted credentials.
-* **The Log Signature:** ```text
+* **The Log Signature:**
+```text
 panic: pq: password authentication failed for user "postgres"
-```
 
 ```
 
@@ -54,7 +53,7 @@ panic: pq: password authentication failed for user "postgres"
 
 ---
 
-##  Infrastructure Replication Manifests
+## Infrastructure Replication Manifests
 
 To reproduce and fix these states deterministically without anti-patterns like hardcoded IP routing, the following production-grade manifests were deployed.
 
@@ -145,4 +144,6 @@ spec:
 
 ```
 
+```
 
+```
